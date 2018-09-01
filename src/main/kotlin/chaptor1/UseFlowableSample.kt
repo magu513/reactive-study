@@ -31,11 +31,13 @@ fun main(args: Array<String>) {
 			.subscribe(object : Subscriber<String> {
 				private lateinit var subscription: Subscription
 
+				// 購読が開始された際の処理
 				override fun onSubscribe(s: Subscription?) {
 					this.subscription = s as Subscription
 					this.subscription.request(1L)
 				}
 
+				// データを受け取った際の処理
 				override fun onNext(data: String?) {
 					val threadName = Thread.currentThread().name
 					println("$threadName : $data")
