@@ -105,4 +105,29 @@ fun main(args: Array<String>) {
 					println("エラー=$t")
 				}
 			})
+
+	Flowable
+		.just(1,2,3)
+			.subscribe(object: Subscriber<Int> {
+				override fun onSubscribe(s: Subscription?) {
+					println("onSubscribe START")
+					// request実行すると通知処理が開始される
+					s?.request(Long.MAX_VALUE)
+					// 本来は後続の処理がない状態でないでrequestを実行する
+					// → 期待するタイミングで後続処理が実行される可能性があるため
+					println("onSubscribe END")
+				}
+
+				override fun onNext(t: Int?) {
+					println(t)
+				}
+
+				override fun onComplete() {
+					println("完了")
+				}
+				override fun onError(t: Throwable?) {
+					println("エラー: $t")
+				}
+
+			})
 }
