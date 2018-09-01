@@ -87,7 +87,7 @@ fun main(args: Array<String>) {
 	Thread.sleep(2000L)
 
 	// onSubscribeメソッドの途中で処理が始まる例
-	Flowable.range(1,3)
+	Flowable.range(1, 3)
 			.subscribe(object : Subscriber<Int> {
 				override fun onComplete() {
 					println("完了")
@@ -109,8 +109,8 @@ fun main(args: Array<String>) {
 			})
 
 	Flowable
-		.just(1,2,3)
-			.subscribe(object: Subscriber<Int> {
+			.just(1, 2, 3)
+			.subscribe(object : Subscriber<Int> {
 				override fun onSubscribe(s: Subscription?) {
 					println("onSubscribe START")
 					// request実行すると通知処理が開始される
@@ -127,6 +127,7 @@ fun main(args: Array<String>) {
 				override fun onComplete() {
 					println("完了")
 				}
+
 				override fun onError(t: Throwable?) {
 					println("エラー: $t")
 				}
@@ -140,7 +141,7 @@ fun main(args: Array<String>) {
  * Disposableを使って購読を解除するサンプル
  */
 fun useDisposableAndUnSubscribe() {
-	val disposable = Flowable.just(1,2,3).subscribe { println("data=$it")}
+	val disposable = Flowable.just(1, 2, 3).subscribe { println("data=$it") }
 	// 購読を解除する
 	disposable.dispose()
 }
@@ -152,10 +153,12 @@ fun useSubscribeWith() {
 	// subscribeWithはSubscriber/Observerを引数に取る
 	// subscribeWithは内部で引数に渡したsubscribeを実行し、引数をそのまま戻り値として返す。
 	// ResourceSubscriberはDisposableを実装しているため、Disposableとして受け取ることができる
-	val disposable = Flowable.range(1,3).subscribeWith(object: ResourceSubscriber<Int>() {
+	val disposable = Flowable.range(1, 3).subscribeWith(object : ResourceSubscriber<Int>() {
 		override fun onComplete() {}
 
-		override fun onNext(t: Int?) { println("data=$t")}
+		override fun onNext(t: Int?) {
+			println("data=$t")
+		}
 
 		override fun onError(t: Throwable?) {}
 
