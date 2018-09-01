@@ -12,6 +12,7 @@ import sun.rmi.runtime.Log
 import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>) {
+	// SubscribeはReactive Streamに対応
 	// 挨拶の言葉を通知するFlowableの生成
 	val flowable = Flowables.create<String>(BackpressureStrategy.BUFFER) { emmiter ->
 		val datas = listOf("Hello, World", "こんにちは、世界!")
