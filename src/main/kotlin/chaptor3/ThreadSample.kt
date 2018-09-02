@@ -1,12 +1,14 @@
 package chaptor3
 
 import io.reactivex.Flowable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subscribers.ResourceSubscriber
 import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>) {
 	mainThread()
 	otherThread()
+	choiceScheduler()
 }
 
 /**
@@ -52,5 +54,17 @@ fun otherThread() {
 			})
 	println("end")
 	Thread.sleep(1000L)
+}
+
+/**
+ * 有効になるスケジューラ
+ */
+fun choiceScheduler() {
+	Flowable.range(1, 5)
+			.subscribeOn(Schedulers.computation()) // 一番最初に書かれたsubscribeOnが有効になる
+			.subscribeOn(Schedulers.io()) // I/O処理を行う際に使う。ThreadPoolから取得され、必要なら新規にThreadを生成
+			.subscribeOn(Schedulers.single()) // 単一のThreadで処理する際に使われる
+			.subscribe { println("${Thread.currentThread().name} : $it") }
+	Thread.sleep(500)
 }
 
