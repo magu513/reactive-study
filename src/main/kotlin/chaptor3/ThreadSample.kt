@@ -4,11 +4,13 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subscribers.ResourceSubscriber
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
 	mainThread()
 	otherThread()
 	choiceScheduler()
+	choiceSchedulerForObserve()
 }
 
 /**
@@ -68,3 +70,25 @@ fun choiceScheduler() {
 	Thread.sleep(500)
 }
 
+/**
+ * observeOnでbufferSizeをしているサンプル
+ */
+fun choiceSchedulerForObserve() {
+	Flowable.interval(300L, TimeUnit.MILLISECONDS)
+			// BackpressureMode.DROPを指定した時と同じ挙動にする
+			.onBackpressureDrop()
+			// エラー発生時にすぐエラー通知、Bufferを1とする
+			// Bufferを増やすとx分通知するようになる
+			.observeOn(Schedulers.computation(), false, 1)
+			.subscribe {
+				try {
+					Thread.sleep(1000L)
+				} catch (e: InterruptedException) {
+					e.printStackTrace()
+					exitProcess(1)
+				}
+
+				println("${Thread.currentThread().name} : $it")
+			}
+	Thread.sleep(4000L)
+}
