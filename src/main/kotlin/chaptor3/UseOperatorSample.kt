@@ -7,6 +7,9 @@ fun main(args: Array<String>) {
 	useFlatMap()
 }
 
+/**
+ * flatMapメソッド内で異なるスレッド場で動くFlowableを生成した場合のサンプル
+ */
 fun useFlatMap() {
 	// FlatMapは通知されたデータを同時に実行する
 	val flowable = Flowable.just("A", "B", "C")
