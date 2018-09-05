@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 fun main(args: Array<String>) {
 	useFlatMap()
 	concatMap()
+	useConcatMapEager()
 }
 
 /**
@@ -38,4 +39,19 @@ fun concatMap() {
 				println("${Thread.currentThread().name}: data=$it, time=$time")
 			}
 	Thread.sleep(4000L)
+}
+
+/**
+ * concatMapEagerメソッド内で異なるスレッド上で動くFlowableを生成した場合
+ */
+fun useConcatMapEager() {
+	// concatMapEagerは処理は同時に実行されるが、結果は元のデータの順にバッファされる
+	Flowable.just("G", "H", "I")
+			.concatMapEager { Flowable.just(it).delay(1000L, TimeUnit.MILLISECONDS) }
+			.subscribe {
+				val time = LocalTime.now().format(DateTimeFormatter.ofPattern("ss:SSS"))
+				// 結果は同一のThreadで出力される
+				println("${Thread.currentThread().name}: data=$it, time=$time")
+			}
+	Thread.sleep(2000L)
 }
