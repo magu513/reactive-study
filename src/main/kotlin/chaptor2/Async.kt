@@ -1,5 +1,6 @@
 package chaptor2
 
+import other.Counter
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -140,17 +141,6 @@ fun multiThreadAccessThreadSafeForPoint() {
 
 	// 非同期タスクをシャットダウンする
 	executorService.shutdown()
-}
-
-
-class Counter {
-	@Volatile
-	var count: Int = 0
-		private set
-
-	fun increment() {
-		count++
-	}
 }
 
 /**
