@@ -1,6 +1,8 @@
 package chaptor3
 
 import io.reactivex.Flowable
+import io.reactivex.schedulers.Schedulers
+import other.Counter
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -9,6 +11,7 @@ fun main(args: Array<String>) {
 	useFlatMap()
 	concatMap()
 	useConcatMapEager()
+	twoThreadUpdateObject()
 }
 
 /**
@@ -54,4 +57,25 @@ fun useConcatMapEager() {
 				println("${Thread.currentThread().name}: data=$it, time=$time")
 			}
 	Thread.sleep(2000L)
+}
+
+/**
+ * 2つのスレッドから同じオブジェクトの更新を行う
+ */
+fun twoThreadUpdateObject() {
+	val counter = Counter()
+	Flowable
+			.range(1, 10000)
+			.subscribeOn(Schedulers.computation())
+			.subscribe({ counter.increment() }, { println("エラー=$it") }, { println("counter.get()=${counter.count}") })
+	Flowable
+			.range(1, 10000)
+			// Flowableを異なるスレッド場で処理を行うようにする
+			.subscribeOn(Schedulers.computation())
+			// 異なるスレッド上で処理を行うようにする
+			.observeOn(Schedulers.computation())
+			.subscribe({ counter.increment() }, { println("エラー=$it") }, { println("counter.get()=${counter.count}") })
+
+	Thread.sleep(1000L)
+	// シーケンシャルに処理が行われないため、出力値は20000にならない
 }
