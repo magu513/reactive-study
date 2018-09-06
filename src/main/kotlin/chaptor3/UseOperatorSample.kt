@@ -12,6 +12,7 @@ fun main(args: Array<String>) {
 	concatMap()
 	useConcatMapEager()
 	twoThreadUpdateObject()
+	twoThreadUpdateObjectMerge()
 }
 
 /**
@@ -78,4 +79,29 @@ fun twoThreadUpdateObject() {
 
 	Thread.sleep(1000L)
 	// シーケンシャルに処理が行われないため、出力値は20000にならない
+}
+
+/**
+ * mergeを使って結合した場合
+ */
+fun twoThreadUpdateObjectMerge() {
+	val counter = Counter()
+	val source1 = Flowable
+			.range(1, 10000)
+			.subscribeOn(Schedulers.computation())
+			.observeOn(Schedulers.computation())
+	val source2 = Flowable
+			.range(1, 10000)
+			// Flowableを異なるスレッド場で処理を行うようにする
+			.subscribeOn(Schedulers.computation())
+			// 異なるスレッド上で処理を行うようにする
+			.observeOn(Schedulers.computation())
+
+	// 2つのFlowableをマージする
+	Flowable
+			.merge(source1, source2)
+			.subscribe({ counter.increment() }, { println("エラー=$it") }, { println("counter.get()=${counter.count}") })
+	// シーケンシャルに処理が行われるため20000が出力される
+	// 共有のインスタンスを操作する場合は、複数のFlowable/Observalbeを結合しから終端処理を行う必要がある
+	Thread.sleep(1000L)
 }
