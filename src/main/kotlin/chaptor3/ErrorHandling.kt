@@ -7,6 +7,7 @@ import org.reactivestreams.Subscription
 
 fun main(args: Array<String>) {
     retry()
+    substituteData()
 }
 
 /**
@@ -48,4 +49,16 @@ fun retry() {
                 }
 
             })
+}
+
+/**
+ * エラー時に代替データを通知する場合
+ */
+fun substituteData() {
+    Flowable
+            .just(1, 3, 5, 0, 2, 4)
+            .map { 100 / it }
+            // エラーが発生したら0を通知する
+            .onErrorReturnItem(0)
+            .subscribe({ println("data=$it") }, { println("error=$it") }, { println("完了") })
 }
