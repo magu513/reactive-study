@@ -15,6 +15,8 @@ fun main(args: Array<String>) {
     range()
     interval()
     timer()
+    defer()
+    empty()
 }
 
 fun just() {
@@ -96,6 +98,32 @@ fun timer() {
         Thread.sleep(1500L)
     }
 }
+
+fun defer() {
+    wrapper {
+        // deferは購読されるたびに新しいFlowable/Observableを生成する
+        // 呼び出されたタイミングでデータを生成する必要がある場合に使われる
+
+        // この場合は型を明示しないと、２度目の呼び出し時にエラーが発生する
+        val flowable: Flowable<LocalTime> = Flowable.defer { Flowable.just(LocalTime.now()) }
+        flowable.subscribe(DebugSubscriber("No.1"))
+        Thread.sleep(2000L)
+        flowable.subscribe(DebugSubscriber("No.2"))
+    }
+}
+
+fun empty() {
+    wrapper {
+        // 空のFlowable/Observableを生成する
+        Flowable
+                // ジェネリクス未指定だと怒られるので、とりあえずVoidを指定
+                // 完了のみ通知する
+                .empty<Void>()
+                .subscribe(DebugSubscriber())
+    }
+}
+
+
 
 fun wrapper(f: () -> Unit) {
     f()
