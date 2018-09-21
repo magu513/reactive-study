@@ -17,6 +17,8 @@ fun main(args: Array<String>) {
     timer()
     defer()
     empty()
+    error()
+    never()
 }
 
 fun just() {
@@ -123,7 +125,24 @@ fun empty() {
     }
 }
 
+fun error() {
+    wrapper {
+        // エラーのみ通知する
+        Flowable
+                .error<Exception>(Exception("例外発生"))
+                .subscribe(DebugSubscriber())
+    }
+}
 
+fun never() {
+    wrapper {
+        // 何も通知しない
+        Flowable
+                // 完了も通知されない
+                .never<Void>()
+                .subscribe(DebugSubscriber())
+    }
+}
 
 fun wrapper(f: () -> Unit) {
     f()
