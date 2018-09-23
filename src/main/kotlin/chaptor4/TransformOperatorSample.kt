@@ -107,7 +107,7 @@ fun concatMapEager() {
                     Flowable
                             .interval(500L, TimeUnit.MILLISECONDS)
                             .take(3)
-                            .doOnNext { if (sourceData == 1 && it == 1L) throw Exception("例外発生") }
+                            .doOnNext { if (sourceData == 21 && it == 1L) throw Exception("例外発生") }
                             .map { "[$sourceData] $it" }
                 }, true)
                 .subscribe(DebugSubscriber())
