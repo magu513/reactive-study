@@ -9,6 +9,7 @@ fun main(args: Array<String>) {
     flatmap()
     concatMap()
     concatMapEager()
+    buffer()
 }
 
 fun map() {
@@ -110,6 +111,27 @@ fun concatMapEager() {
                             .doOnNext { if (sourceData == 21 && it == 1L) throw Exception("例外発生") }
                             .map { "[$sourceData] $it" }
                 }, true)
+                .subscribe(DebugSubscriber())
+        Thread.sleep(4000L)
+    }
+}
+
+fun buffer() {
+    // 個数や時間などでデータをList(Collection)にまとめる
+    wrapper {
+        Flowable
+                .interval(100L, TimeUnit.MILLISECONDS)
+                .take(10)
+                .buffer(3)
+                .subscribe(DebugSubscriber())
+        Thread.sleep(3000L)
+    }
+
+    wrapper {
+        Flowable
+                .interval(300L, TimeUnit.MILLISECONDS)
+                .take(7)
+                .buffer(1000L, TimeUnit.MILLISECONDS)
                 .subscribe(DebugSubscriber())
         Thread.sleep(4000L)
     }
