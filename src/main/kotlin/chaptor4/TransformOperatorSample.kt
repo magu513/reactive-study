@@ -10,6 +10,8 @@ fun main(args: Array<String>) {
     concatMap()
     concatMapEager()
     buffer()
+    toList()
+    toMap()
 }
 
 fun map() {
@@ -131,8 +133,37 @@ fun buffer() {
         Flowable
                 .interval(300L, TimeUnit.MILLISECONDS)
                 .take(7)
+                // 時間でデータを区切る(300msごとなので、ここでは大体3件ずつ)
                 .buffer(1000L, TimeUnit.MILLISECONDS)
                 .subscribe(DebugSubscriber())
         Thread.sleep(4000L)
+    }
+}
+
+fun toList() {
+    wrapper {
+        val single = Flowable
+                .just("A", "B", "C", "D", "E")
+                // 全データを持つListを通知
+                .toList()
+        single.subscribe(DebugSingleObserver())
+    }
+}
+
+fun toMap() {
+    wrapper {
+        Flowable
+                .just("1A", "2B", "3C", "1D", "2E")
+                // データから生成したキーとッデータの組み合わせのMapを通知
+                .toMap { it.substring(0, 1).toLong() }
+                .subscribe(DebugSingleObserver())
+    }
+
+    wrapper {
+        Flowable
+                .just("1A", "2B", "3C", "1D", "2E")
+                .toMap({ it.substring(0, 1).toLong() },
+                        { it.substring(1) })
+                .subscribe(DebugSingleObserver())
     }
 }
